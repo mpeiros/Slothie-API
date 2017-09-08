@@ -6,7 +6,7 @@ class UsersController < ApplicationController
       render json: @user
     else
       @errors = @user.errors.full_messages
-      render json: @error
+      render json: { errors: @errors }
     end
   end
 
