@@ -51,6 +51,34 @@ RSpec.describe UsersController, type: :controller do
       it 'responds with status code 400' do
         expect(response).to have_http_status 400
       end
+
+      it 'does not add a user to the database', :has_request do
+        expect { post(:create, params: { 
+                                 user: { 
+                                   username: '',
+                                   email: '',
+                                   password: '1234'
+                                 } 
+                               }) }.to change(User, :count).by(0)
+      end
+
+      it 'assigns the unsaved user as @user' do
+        expect(assigns(:user)).to be_a_new User
+      end
+
+      it 'assigns the error messages to @errors' do
+        expect(assigns(:errors)).to eq [ "Username can't be blank",
+                                         "Email can't be blank",
+                                         'Password is too short (minimum is 6 characters)' ]
+      end
+
+      it 'returns the JSON representation of the errors' do
+        expect(JSON.parse(response.body)).to eq 'errors' => [
+                                                  "Username can't be blank",
+                                                  "Email can't be blank",
+                                                  'Password is too short (minimum is 6 characters)'
+                                                ]                                           
+      end
     end
   end
 end
